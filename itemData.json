@@ -1,0 +1,26 @@
+[
+    {
+        "Name" : "Pen",
+        "Price" : 10,
+        "Quantity" :1,
+        "Type" : "imported",
+        "Tax" : 0.0,
+        "FinalPrice" : 0.0
+    },
+    {
+        "Name" : "wood",
+        "Price" : 150,
+        "Quantity" :1,
+        "Type" : "raw",
+        "Tax" : 0.0,
+        "FinalPrice" : 0.0
+    },
+    {
+        "Name" : "furniture",
+        "Price" : 1000,
+        "Quantity" :10,
+        "Type" : "manufactured",
+        "Tax" : 0.0,
+        "FinalPrice" : 0.0
+    }
+]
