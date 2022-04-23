@@ -88,7 +88,7 @@ func (app *App) DisplayItems(retrieve chan models.Item) {
 		for val := range retrieve {
 			fmt.Printf("NAME :: %s | QUANTITY :: %d | TAX :: %v | TOTAL :: %v\n", val.Name, val.Quantity, val.Tax, val.FinalPrice)
 		}
-		app.wg.Done()
+		// app.wg.Done()
 	}()
-	// app.wg.Done()
+	app.wg.Done()
 }

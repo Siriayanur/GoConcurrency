@@ -1,6 +1,10 @@
 package models
 
-import "github.com/Siriayanur/GoConcurrency/utils"
+import (
+	"math"
+
+	"github.com/Siriayanur/GoConcurrency/utils"
+)
 
 type Item struct {
 	Name       string  `gorm:"default:newItem"`
@@ -22,9 +26,9 @@ func NewItem(name string, price float64, quantity int, itemType string) Item {
 
 func (item *Item) CalculateFinalPrice() {
 	mrp := 0.0
-	item.Tax = utils.RoundFloat(getTax(item.Type, item.Price))
+	item.Tax = RoundFloat(getTax(item.Type, item.Price))
 	mrp = float64(item.Quantity) * (item.Price + item.Tax)
-	item.FinalPrice = utils.RoundFloat(mrp)
+	item.FinalPrice = RoundFloat(mrp)
 }
 
 func getTax(itemType string, itemPrice float64) float64 {
@@ -53,4 +57,7 @@ func calculateSurcharge(amount float64, itemPrice float64) float64 {
 	default:
 		return 0
 	}
+}
+func RoundFloat(val float64) float64 {
+	return math.Floor(val*100) / 100
 }
