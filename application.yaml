@@ -1,6 +1,6 @@
 db:
-  host: 127.0.0.1:3306
+  host: localhost:3306
   user: root
-  password: root
-  dbName: itemsss
+  password: root@1234
+  dbName: itemsDB
   

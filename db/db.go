@@ -10,7 +10,6 @@ import (
 	"github.com/Siriayanur/GoConcurrency/models"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	gormlogger "gorm.io/gorm/logger"
 )
 
 type DB struct {
@@ -18,40 +17,14 @@ type DB struct {
 }
 
 func (d *DB) InitDB() error {
-	// conf := config.LoadConfig()
-	// dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", conf.Database.User, conf.Database.Password, conf.Database.Host, conf.Database.DBName)
-
-	// db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
-	// if err != nil {
-	// 	return err
-	// }
-	// d.db = db
-	// if !db.Migrator().HasTable(&models.Item{}) {
-	// 	err := d.db.AutoMigrate(&models.Item{})
-	// 	if err != nil {
-	// 		return err
-	// 	}
-	// 	err = d.AddDataToDB()
-	// 	if err != nil {
-	// 		return err
-	// 	}
-	// }
-	// return nil
 	conf := config.LoadConfig()
-
 	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", conf.Database.User, conf.Database.Password, conf.Database.Host, conf.Database.DBName)
-	gormLog := gormlogger.Default
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
-		Logger: gormLog,
-	})
-	fmt.Println("works 1")
+
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
-		fmt.Println("error")
 		return err
 	}
 	d.db = db
-	fmt.Println("works 2")
-
 	if !db.Migrator().HasTable(&models.Item{}) {
 		err := d.db.AutoMigrate(&models.Item{})
 		if err != nil {
