@@ -16,14 +16,32 @@ type DB struct {
 	db *gorm.DB
 }
 
+type IDB interface {
+	InitDB() error
+	AddDataToDB() error
+	ReadDataFromDB() ([]models.Item, error)
+}
+
 func (d *DB) InitDB() error {
 	conf := config.LoadConfig()
 	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", conf.Database.User, conf.Database.Password, conf.Database.Host, conf.Database.DBName)
 
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+
 	if err != nil {
 		return err
+		// db = db.Exec("CREATE DATABASE items1;")
+		// db.Migrator().CreateTable(&models.Item{})
 	}
+	// stmt := fmt.Sprintf("SELECT * FROM items1;")
+	// rs := db.Raw(stmt)
+	// if rs.Error != nil {
+	// 	return rs.Error
+	// }
+	// stmt = fmt.Sprintf("CREATE DATABASE %s;", conf.Database.DBName)
+	// if rs := db.Exec(stmt); rs.Error != nil {
+	// 	return rs.Error
+	// }
 	d.db = db
 	if !db.Migrator().HasTable(&models.Item{}) {
 		err := d.db.AutoMigrate(&models.Item{})
@@ -79,7 +97,7 @@ func ReadFileData() ([]models.Item, error) {
 	}
 	return unmarshalData, nil
 }
-func NewDBInstance() *DB {
+func NewDBInstance() IDB {
 	db := DB{}
 	err := db.InitDB()
 

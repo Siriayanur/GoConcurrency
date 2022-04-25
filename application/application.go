@@ -12,12 +12,19 @@ import (
 type App struct {
 	wg            sync.WaitGroup
 	mutex         sync.Mutex
-	dbInstance    *db.DB
+	dbInstance    db.IDB
 	retrieveItems []models.Item
 	updateItems   []models.Item
 }
+type IApp interface {
+	AddDataToCollection([]models.Item) chan models.Item
+	Calculate(chan models.Item) chan models.Item
+	UpdateItemToCollection(chan models.Item) chan models.Item
+	DisplayItems(chan models.Item)
+	RunApp()
+}
 
-func NewApp(di *db.DB) *App {
+func NewApp(di db.IDB) IApp {
 	app := App{dbInstance: di}
 	return &app
 }

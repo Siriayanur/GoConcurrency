@@ -2,5 +2,5 @@ db:
   host: localhost:3306
   user: root
   password: root@1234
-  dbName: itemsDB
+  dbName: items1
   

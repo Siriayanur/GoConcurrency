@@ -22,5 +22,13 @@
         "Type" : "manufactured",
         "Tax" : 0.0,
         "FinalPrice" : 0.0
+    },
+    {
+        "Name" : "chocolates",
+        "Price" : 2000,
+        "Quantity" :5,
+        "Type" : "imported",
+        "Tax" : 0.0,
+        "FinalPrice" : 0.0
     }
 ]
