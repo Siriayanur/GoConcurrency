@@ -1,4 +1,5 @@
 //go:build wireinject
+// +build wireinject
 
 package main
 
@@ -8,7 +9,11 @@ import (
 	"github.com/google/wire"
 )
 
-func InitializeEvent() application.IApp {
-	wire.Build(application.NewApp, db.NewDBInstance)
+func InitializeEvent() *application.App {
+
+	wire.Build(
+		wire.NewSet(wire.InterfaceValue(new(db.IDB), db.NewDBInstance()),
+			application.NewApp,
+		))
 	return &application.App{}
 }

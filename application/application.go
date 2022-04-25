@@ -13,18 +13,11 @@ type App struct {
 	wg            sync.WaitGroup
 	mutex         sync.Mutex
 	dbInstance    db.IDB
-	retrieveItems []models.Item
-	updateItems   []models.Item
-}
-type IApp interface {
-	AddDataToCollection([]models.Item) chan models.Item
-	Calculate(chan models.Item) chan models.Item
-	UpdateItemToCollection(chan models.Item) chan models.Item
-	DisplayItems(chan models.Item)
-	RunApp()
+	RetrieveItems []models.Item
+	UpdateItems   []models.Item
 }
 
-func NewApp(di db.IDB) IApp {
+func NewApp(di db.IDB) *App {
 	app := App{dbInstance: di}
 	return &app
 }
@@ -52,7 +45,7 @@ func (app *App) AddDataToCollection(items []models.Item) chan models.Item {
 		for _, val := range items {
 			store <- val
 			app.mutex.Lock()
-			app.retrieveItems = append(app.retrieveItems, val)
+			app.RetrieveItems = append(app.RetrieveItems, val)
 			app.mutex.Unlock()
 		}
 	}()
@@ -80,7 +73,7 @@ func (app *App) UpdateItemToCollection(retrieve chan models.Item) chan models.It
 		for val := range retrieve {
 			// ensure updateItems is not used by any other routine
 			app.mutex.Lock()
-			app.updateItems = append(app.updateItems, val)
+			app.UpdateItems = append(app.UpdateItems, val)
 			app.mutex.Unlock()
 			store <- val
 		}

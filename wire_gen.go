@@ -13,8 +13,12 @@ import (
 
 // Injectors from wire.go:
 
-func InitializeEvent() application.IApp {
-	idb := db.NewDBInstance()
-	iApp := application.NewApp(idb)
-	return iApp
+func InitializeEvent() *application.App {
+	idb := _wireIDBValue
+	app := application.NewApp(idb)
+	return app
 }
+
+var (
+	_wireIDBValue = db.NewDBInstance()
+)

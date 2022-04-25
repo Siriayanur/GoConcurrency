@@ -5,23 +5,58 @@ import (
 
 	"github.com/Siriayanur/GoConcurrency/db"
 	"github.com/Siriayanur/GoConcurrency/models"
+	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/require"
 )
 
-func CreateTestData() (IApp, []models.Item) {
-	dbi := db.NewDBInstance()
-	app := NewApp(dbi)
-	items := []models.Item{}
-	item1 := models.Item{Name: "a", Price: 100, Type: "raw", Tax: 0.0, FinalPrice: 0.0, Quantity: 2}
-	item2 := models.Item{Name: "b", Price: 100, Type: "raw", Tax: 0.0, FinalPrice: 0.0, Quantity: 2}
-	item3 := models.Item{Name: "c", Price: 100, Type: "raw", Tax: 0.0, FinalPrice: 0.0, Quantity: 2}
-	item4 := models.Item{Name: "d", Price: 100, Type: "raw", Tax: 0.0, FinalPrice: 0.0, Quantity: 2}
-	items = append(items, item1)
-	items = append(items, item2)
-	items = append(items, item3)
-	items = append(items, item4)
-	return app, items
-}
 func TestApplication(t *testing.T) {
-	app, items := CreateTestData()
-	app.AddDataToCollection(items)
+	mockCtrl := gomock.NewController(t)
+	var testItems = []models.Item{
+		{
+			Name:       "Pen",
+			Price:      10,
+			Quantity:   1,
+			Type:       "imported",
+			Tax:        1.47,
+			FinalPrice: 11.47,
+		},
+		{
+			Name:       "wood",
+			Price:      150,
+			Quantity:   1,
+			Type:       "raw",
+			Tax:        18.75,
+			FinalPrice: 168.75,
+		},
+		{
+			Name:       "furniture",
+			Price:      1000,
+			Quantity:   10,
+			Type:       "manufactured",
+			Tax:        15,
+			FinalPrice: 10150,
+		},
+		{
+			Name:       "chocolates",
+			Price:      2000,
+			Quantity:   5,
+			Type:       "imported",
+			Tax:        295,
+			FinalPrice: 11475,
+		},
+	}
+
+	mockDB := db.NewMockIDB(mockCtrl)
+	mockDB.EXPECT().ReadDataFromDB().Times(1).Return(testItems, nil)
+	app := NewApp(mockDB)
+	app.RunApp()
+	for i := range app.UpdateItems {
+		require.Equal(t, app.UpdateItems[i].Name, testItems[i].Name)
+		require.Equal(t, app.UpdateItems[i].Price, testItems[i].Price)
+		require.Equal(t, app.UpdateItems[i].Type, testItems[i].Type)
+		require.Equal(t, app.UpdateItems[i].Quantity, testItems[i].Quantity)
+		require.Equal(t, app.UpdateItems[i].Tax, testItems[i].Tax)
+		require.Equal(t, app.UpdateItems[i].FinalPrice, testItems[i].FinalPrice)
+
+	}
 }
