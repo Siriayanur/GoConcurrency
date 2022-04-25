@@ -3,6 +3,7 @@ module github.com/Siriayanur/GoConcurrency
 go 1.18
 
 require (
+	github.com/google/wire v0.5.0
 	github.com/ilyakaznacheev/cleanenv v1.2.6
 	gorm.io/driver/mysql v1.3.3
 	gorm.io/gorm v1.23.4

@@ -30,18 +30,7 @@ func (d *DB) InitDB() error {
 
 	if err != nil {
 		return err
-		// db = db.Exec("CREATE DATABASE items1;")
-		// db.Migrator().CreateTable(&models.Item{})
 	}
-	// stmt := fmt.Sprintf("SELECT * FROM items1;")
-	// rs := db.Raw(stmt)
-	// if rs.Error != nil {
-	// 	return rs.Error
-	// }
-	// stmt = fmt.Sprintf("CREATE DATABASE %s;", conf.Database.DBName)
-	// if rs := db.Exec(stmt); rs.Error != nil {
-	// 	return rs.Error
-	// }
 	d.db = db
 	if !db.Migrator().HasTable(&models.Item{}) {
 		err := d.db.AutoMigrate(&models.Item{})

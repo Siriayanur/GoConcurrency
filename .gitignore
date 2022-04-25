@@ -1,2 +1,4 @@
 .vscode
 .golangci.yaml
+bin
+main
