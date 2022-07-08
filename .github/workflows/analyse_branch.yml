@@ -20,7 +20,7 @@ env:
 # We can now build our job
 jobs:
   analyse:
-    runs-on: [macos-latest]
+    runs-on: [self-hosted]
 
     steps:
       - name: Set up go

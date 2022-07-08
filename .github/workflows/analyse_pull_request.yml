@@ -17,7 +17,7 @@ env:
 
 jobs:
   analyse:
-    runs-on: [macos-latest]
+    runs-on: [self-hosted]
 
     steps:
       - name: Set up go
@@ -41,3 +41,7 @@ jobs:
 
       - name: Vet
         run: go vet -json ./... &> ${REPORT_DIR}/${VET_FILE}
+
+
+
+
