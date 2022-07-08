@@ -1,0 +1,62 @@
+# Start by giving a name to your workflow
+name: Analyze branch
+
+# then define on which event, here a push
+on:
+  push:
+    # and the target with some regex to match our specific  branch names
+    branches:
+      - master
+      - staging
+      - feature/**
+      - SDK**
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GOPRIVATE: github.com/${{ github.repository_owner }}
+  GONOSUMDB: github.com/${{ github.repository_owner }}
+  REPORT_DIR: report
+  VET_FILE: vet.txt
+  COVERAGE_FILE: coverage.txt
+
+# We can now build our job
+jobs:
+  analyse:
+    runs-on: [self-hosted]
+
+    steps:
+      - name: Set up go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.18
+        id: go
+      # Use an existing action, you can look in the market place to find what you need and how to use it, to setup the sonar scanner
+      - name: Setup sonar scanner
+        uses: warchant/setup-sonar-scanner@v3
+
+      # Another existing action, this one to checkout the repository
+      - name: 'Checkout repository on branch: ${{ github.REF }}'
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.REF }}
+          fetch-depth: 0
+      
+      - name: Test
+        run: go test -short -race -cover -coverprofile=${REPORT_DIR}/${COVERAGE_FILE} -covermode=atomic -v ./... --tags=unit
+
+      - name: Vet
+        run: go vet -json ./... &> ${REPORT_DIR}/${VET_FILE}
+    
+      # - name: 'Sonar analysis of the ${{ github.REF }} branch'
+      #   env:
+      #     # to get access to secrets.SONAR_TOKEN, provide GITHUB_TOKEN
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   run: sonar-scanner
+      #     -Dsonar.host.url=${{ secrets.SONAR_URL }}
+      #     -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+      #     -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+      #     -Dsonar.scm.provider=git
+      #     -Dsonar.coverage.exclusions=**/test/**/*,**/clients/*,**/constants/*,**/enum/*,**/mocks/*,*_test.go,**/*_test.go,**/*_mock.go
+      #     -Dsonar.cpd.exclusions=**/test/**/*,**/test/*,**/clients/*,**/constants/*,**/enum/*,**/mocks/*,*_test.go,**/*_test.go,**/*_mock.go
+      - name: Cleanup
+        run: rm -rf ${REPORT_DIR}
