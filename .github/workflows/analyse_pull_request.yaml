@@ -1,0 +1,90 @@
+name: Analyze pull request
+
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+    branches:
+      - dev
+      
+env:
+  GITHUB_TOKEN: ${{ secrets.PRIVATE_GITHUB_TOKEN }}
+  GOPRIVATE: github.com/${{ github.repository_owner }}
+  GONOSUMDB: github.com/${{ github.repository_owner }}
+  REPORT_DIR: report
+  VET_FILE: vet.txt
+  COVERAGE_FILE: coverage.txt
+
+jobs:
+  analyse:
+    runs-on: [self-hosted]
+
+    steps:
+      - name: Set up go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.18
+        id: go
+      - name: Add Go Path
+        run: export PATH=$PATH:$(go env GOPATH)/bin
+      
+      - name: setup env
+        run: |
+          echo "::set-env name=GOPATH::$(go env GOPATH)"
+          echo "::add-path::$(go env GOPATH)/bin"
+        shell: bash
+
+      # - name: Setup sonarqube
+      #   uses: warchant/setup-sonar-scanner@v3
+
+      - name: 'Checkout repository on branch: ${{ github.REF }}'
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.HEAD_REF }}
+
+      # id: go-cache-paths
+      #   run: |
+      #     echo "::set-output name=go-build::$(go env GOCACHE)"
+      #     echo "::set-output name=go-mod::$(go env GOMODCACHE)"
+
+      # - name: Checkout
+      #   uses: actions/checkout@v2
+
+      # # Cache go build cache, used to speedup go test
+      # - name: Go Build Cache
+      #   uses: actions/cache@v2
+      #   with:
+      #     path: ${{ steps.go-cache-paths.outputs.go-build }}
+      #     key: ${{ runner.os }}-go-build-${{ hashFiles('**/go.sum') }}
+
+      # # Cache go mod cache, used to speedup builds
+      # - name: Go Mod Cache
+      #   uses: actions/cache@v2
+      #   with:
+      #     path: ${{ steps.go-cache-paths.outputs.go-mod }}
+      #     key: ${{ runner.os }}-go-mod-${{ hashFiles('**/go.sum') }}
+      - name: Make report directory
+        run: mkdir ${REPORT_DIR}
+
+      - name: Test
+        run: go test -short -race -cover -coverprofile=${REPORT_DIR}/${COVERAGE_FILE} -covermode=atomic -v ./... --tags=unit
+
+      - name: Vet
+        run: go vet -json ./... &> ${REPORT_DIR}/${VET_FILE}
+
+      # - name: Run an analysis of the PR
+      #   env:
+          # to get access to secrets.SONAR_TOKEN, provide GITHUB_TOKEN
+        #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # run: sonar-scanner
+        #   -Dsonar.host.url=${{ secrets.SONAR_URL }}
+        #   -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+        #   -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+        #   -Dsonar.pullrequest.key=${{ github.event.number }}
+        #   -Dsonar.pullrequest.branch=${{ github.HEAD_REF }}
+        #   -Dsonar.pullrequest.base=${{ github.BASE_REF }}
+        #   -Dsonar.pullrequest.github.repository=${{ github.repository }}
+        #   -Dsonar.go.govet.reportPaths=${REPORT_DIR}/${VET_FILE}
+        #   -Dsonar.scm.provider=git
+        #   -Dsonar.scm.revision=${{ github.event.pull_request.head.sha }}
+        #   -Dsonar.coverage.exclusions=**/test/**/*,**/test/*,**/clients/*,**/constants/*,**/enum/*,**/mocks/*,*_test.go,**/*_test.go,**/*_mock.go
+        #   -Dsonar.cpd.exclusions=**/test/**/*,**/test/*,**/clients/*,**/constants/*,**/enum/*,**/mocks/*,*_test.go,**/*_test.go,**/*_mock.go

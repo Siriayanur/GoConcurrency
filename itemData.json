@@ -1,6 +1,5 @@
 [
     {
-        "Name" : "Pen",
         "Price" : 10,
         "Quantity" :1,
         "Type" : "imported",

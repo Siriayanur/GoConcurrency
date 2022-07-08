@@ -77,7 +77,6 @@ func (app *App) UpdateItemToCollection(retrieve chan models.Item) chan models.It
 			app.mutex.Unlock()
 			store <- val
 		}
-
 	}()
 	return store
 }
