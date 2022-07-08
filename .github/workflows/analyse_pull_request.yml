@@ -7,7 +7,6 @@ on:
       - dev
       - master
       
-      
 env:
   GITHUB_TOKEN: ${{ secrets.PRIVATE_GITHUB_TOKEN }}
   GOPRIVATE: github.com/${{ github.repository_owner }}
