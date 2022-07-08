@@ -20,7 +20,7 @@ env:
 # We can now build our job
 jobs:
   analyse:
-    runs-on: [self-hosted]
+    runs-on: [siri-github-runner]
 
     steps:
       - name: Set up go
