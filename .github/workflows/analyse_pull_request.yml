@@ -14,6 +14,7 @@ env:
   REPORT_DIR: report
   VET_FILE: vet.txt
   COVERAGE_FILE: coverage.txt
+  
 
 jobs:
   analyse:
