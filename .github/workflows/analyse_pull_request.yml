@@ -1,0 +1,43 @@
+name: Analyze pull request
+
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+    branches:
+      - dev
+      - master
+      
+env:
+  GITHUB_TOKEN: ${{ secrets.PRIVATE_GITHUB_TOKEN }}
+  GOPRIVATE: github.com/${{ github.repository_owner }}
+  GONOSUMDB: github.com/${{ github.repository_owner }}
+  REPORT_DIR: report
+  VET_FILE: vet.txt
+  COVERAGE_FILE: coverage.txt
+
+jobs:
+  analyse:
+    runs-on: [macos-latest]
+
+    steps:
+      - name: Set up go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.18
+        id: go
+      - name: Add Go Path
+        run: export PATH=$PATH:$(go env GOPATH)/bin
+
+      - name: 'Checkout repository on branch: ${{ github.REF }}'
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.HEAD_REF }
+
+      - name: Make report directory
+        run: mkdir ${REPORT_DIR}
+
+      - name: Test
+        run: go test -short -race -cover -coverprofile=${REPORT_DIR}/${COVERAGE_FILE} -covermode=atomic -v ./... --tags=unit
+
+      - name: Vet
+        run: go vet -json ./... &> ${REPORT_DIR}/${VET_FILE}
