@@ -37,7 +37,10 @@ jobs:
         with:
           ref: ${{ github.REF }}
           fetch-depth: 0
-      
+
+      - name: Make report directory
+        run: mkdir ${REPORT_DIR}
+
       - name: Test
         run: go test -short -race -cover -coverprofile=${REPORT_DIR}/${COVERAGE_FILE} -covermode=atomic -v ./... --tags=unit
 
