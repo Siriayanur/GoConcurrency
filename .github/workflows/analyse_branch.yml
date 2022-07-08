@@ -7,9 +7,7 @@ on:
     # and the target with some regex to match our specific  branch names
     branches:
       - master
-      - staging
-      - feature/**
-      - SDK**
+      - dev
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -22,7 +20,7 @@ env:
 # We can now build our job
 jobs:
   analyse:
-    runs-on: [self-hosted]
+    runs-on: [macos-latest]
 
     steps:
       - name: Set up go
